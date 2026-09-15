@@ -1,19 +1,32 @@
 # ⚡ Open Interest — Institutional Multi-Venue Futures Trading Platform
 
-[![CI Tests](https://img.shields.io/badge/tests-115%20passed%20(100%25)-brightgreen.svg)](#-test-suites--verification-115115-green)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Node.js](https://img.shields.io/badge/Node.js-18%2B-green.svg)](https://nodejs.org/)
-[![TimescaleDB](https://img.shields.io/badge/TimescaleDB-PostgreSQL%2015-336791.svg)](https://www.timescale.com/)
-[![Kafka](https://img.shields.io/badge/Apache%20Kafka-KRaft%20Mode-231F20.svg)](https://kafka.apache.org/)
-[![React](https://img.shields.io/badge/React-19%20%7C%20TypeScript-61DAFB.svg)](https://react.dev/)
-[![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-v3.4-38B2AC.svg)](https://tailwindcss.com/)
-
 **Open Interest** is an institutional-grade, high-throughput, multi-venue electronic derivatives trading platform and order execution engine. Designed for ultra-low-latency execution, real-time pre-trade risk controls, distributed market data dissemination, and professional multi-window trader workflows modeled after top-tier prop desk terminals (*Trading Technologies / CQG / Bloomberg*).
+
+---
+
+## 🛠️ Core Technology Stack
+
+| Layer / Component | Technologies & Frameworks | Description & Purpose |
+| :--- | :--- | :--- |
+| **Trading Terminal UI** | `React 19`, `TypeScript`, `Vite`, `Tailwind CSS` | Desktop-grade multi-window window manager with dynamic auto-expanding scroll canvas. |
+| **Financial Charting** | `Lightweight-Charts (TradingView)` | Sub-millisecond continuous candlestick charts, volume histograms, and SMA indicators. |
+| **Audio Synthesizer** | `Web Audio API` (OscillatorNode) | Procedural zero-asset earcon synthesis for order fills, cancels, and risk rejections. |
+| **App Server & Gateway** | `Node.js 18+`, `Express.js`, `ws (WebSocket)` | REST endpoints, JWT auth, and 60 FPS delta-throttled multiplexed WebSocket broadcast feeds. |
+| **Security & Auth** | `Bcrypt (10 Rounds)`, `JSON Web Tokens (HS256)` | Role-Based Access Control (Admin vs Trader) with dual username/ID identity resolution. |
+| **Matching Engine** | `In-Memory Double-Auction Engine (Node.js)` | Continuous FIFO Price-Time Priority matching with fixed-precision tick arithmetic. |
+| **Risk & Routing (ROM/SOR)**| `Pre-Trade Risk Engine`, `Smart Order Router` | Sub-millisecond pre-trade position/margin checks, working order reservation, and queue isolation. |
+| **Queue Telemetry (PIQ)** | `Position-in-Queue Estimator` | Real-time queue length tracking ahead of resting orders and exponential fill probability math. |
+| **Event Streaming Bus** | `Apache Kafka (v3.7+ KRaft Mode)`, `KafkaJS` | Distributed, partitioned event log for raw orders, execution reports, trades, and depth. |
+| **Time-Series Persistence** | `TimescaleDB (PostgreSQL 15)` | Partitioned hypertables with automated continuous aggregates (1s, 1m, 5m, 1h OHLCV). |
+| **Connection Pooling** | `pgBouncer 1.21+` | Transaction-mode connection pooling (port 6432) protecting DB from worker exhaustion. |
+| **Testing & CI** | `Node.js Native Test Runner (node:test)` | 115 unit, integration, and crash-recovery test suites (100% green pass rate). |
+| **Containerization** | `Docker`, `Docker Compose` | Full multi-container orchestration for databases, brokers, gateways, and microservices. |
 
 ---
 
 ## 📑 Table of Contents
 
+- [🛠️ Core Technology Stack](#️-core-technology-stack)
 - [🏛️ System Architecture](#️-system-architecture)
 - [📊 Pre-Loaded Global Futures Contracts](#-pre-loaded-global-futures-contracts)
 - [🧩 Deep Dive: Implemented Modules & Architecture](#-deep-dive-implemented-modules--architecture)
@@ -33,6 +46,7 @@
 - [🧪 Test Suites & Verification (115/115 Green)](#-test-suites--verification-115115-green)
 - [🤖 Multi-Trader Algorithmic Simulation](#-multi-trader-algorithmic-simulation)
 - [🔐 Security, RBAC & Sanitation](#-security-rbac--sanitation)
+- [🏷️ Badges & Project Status](#️-badges--project-status)
 - [📄 License](#-license)
 
 ---
@@ -478,6 +492,18 @@ npm run simulate:platform
 - **Role-Based Access Control**: Strict privilege separation between `ADMIN` (system configuration, global risk limit adjustments, trader kill switch) and `TRADER` (order placement, working order blotters, personal portfolio tracking).
 - **Sub-Millisecond Pre-Trade Risk Verification**: Orders exceeding margin capacity or risk limits are blocked at the platform layer before reaching the exchange matching book.
 - **Zero Credential Leaks**: All database passwords, JWT secrets, and broker connection strings are completely externalized into `.env` and strictly excluded from Git tracking via `.gitignore`.
+
+---
+
+## 🏷️ Badges & Project Status
+
+[![CI Tests](https://img.shields.io/badge/tests-115%20passed%20(100%25)-brightgreen.svg)](#-test-suites--verification-115115-green)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Node.js](https://img.shields.io/badge/Node.js-18%2B-green.svg)](https://nodejs.org/)
+[![TimescaleDB](https://img.shields.io/badge/TimescaleDB-PostgreSQL%2015-336791.svg)](https://www.timescale.com/)
+[![Kafka](https://img.shields.io/badge/Apache%20Kafka-KRaft%20Mode-231F20.svg)](https://kafka.apache.org/)
+[![React](https://img.shields.io/badge/React-19%20%7C%20TypeScript-61DAFB.svg)](https://react.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-v3.4-38B2AC.svg)](https://tailwindcss.com/)
 
 ---
 
