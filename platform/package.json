@@ -1,0 +1,19 @@
+{
+    "name": "open-interest-platform",
+    "version": "1.0.0",
+    "description": "Risk & Order Manager (ROM), Smart Order Router (SOR), and Position-in-Queue (PIQ) Engines",
+    "main": "src/server.js",
+    "scripts": {
+        "start": "node src/server.js",
+        "dev": "node --watch src/server.js",
+        "test": "node --test src/*.test.js src/**/*.test.js",
+        "simulate": "node src/simulator.js"
+    },
+    "dependencies": {
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.5",
+        "express": "^4.19.2",
+        "kafkajs": "^2.2.4",
+        "pg": "^8.11.5"
+    }
+}

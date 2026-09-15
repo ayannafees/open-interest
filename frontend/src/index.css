@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body {
+    @apply text-terminal-text font-mono select-none overflow-hidden m-0 p-0 antialiased h-screen w-screen;
+    background-color: #475569 !important;
+    font-variant-numeric: tabular-nums;
+  }
+  #root {
+    background-color: #475569 !important;
+    height: 100%;
+    width: 100%;
+  }
+}
+
+.bg-terminal-bg {
+  background-color: #475569 !important;
+}
+
+/* Ensure all select and option dropdowns render dark text on light background */
+select, option, optgroup {
+  color-scheme: light !important;
+  color: #0f172a !important;
+  background-color: #ffffff !important;
+}
+
+select {
+  color: #0f172a !important;
+}
+
+option {
+  color: #0f172a !important;
+  background-color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+/* Institutional Professional Scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #334155;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #334155;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #cbd5e1;
+}
+
+::-webkit-scrollbar-corner {
+  background: #334155;
+}

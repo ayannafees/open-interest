@@ -1,0 +1,165 @@
+version: '3.8'
+
+services:
+    # --------------------------------------------------------------------------
+    # 1. Event Streaming & Messaging: Apache Kafka (KRaft Mode)
+    # --------------------------------------------------------------------------
+    kafka:
+        image: confluentinc/cp-kafka:7.5.0
+        container_name: oi_kafka
+        ports:
+            - "9092:9092"
+            - "29092:29092"
+        environment:
+            KAFKA_NODE_ID: 1
+            KAFKA_PROCESS_ROLES: 'broker,controller'
+            KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:29093'
+            KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:29092,CONTROLLER://0.0.0.0:29093'
+            KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092'
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT'
+            KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+            KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+            CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+            KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+            KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+            KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+            KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+
+    # --------------------------------------------------------------------------
+    # 2. Database: TimescaleDB (PostgreSQL 15 Time-Series Engine)
+    # --------------------------------------------------------------------------
+    timescaledb:
+        image: timescale/timescaledb:latest-pg15
+        container_name: oi_timescaledb
+        environment:
+            POSTGRES_USER: ${POSTGRES_USER:-postgres}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+            POSTGRES_DB: ${POSTGRES_DB:-open_interest}
+        ports:
+            - "5432:5432"
+        volumes:
+            - ./init-db:/docker-entrypoint-initdb.d
+
+    # --------------------------------------------------------------------------
+    # 3. Connection Pooler: pgBouncer (Transaction Pooling)
+    # --------------------------------------------------------------------------
+    pgbouncer:
+        image: edoburu/pgbouncer:latest
+        container_name: oi_pgbouncer
+        depends_on:
+            - timescaledb
+        environment:
+            DB_USER: ${POSTGRES_USER:-postgres}
+            DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+            DB_HOST: ${DB_HOST:-timescaledb}
+            DB_NAME: ${POSTGRES_DB:-open_interest}
+            POOL_MODE: transaction
+            MAX_CLIENT_CONN: 200
+            DEFAULT_POOL_SIZE: 20
+            AUTH_TYPE: plain
+            LISTEN_PORT: 6432
+        ports:
+            - "6432:6432"
+
+    # --------------------------------------------------------------------------
+    # 4. Kafka Web UI
+    # --------------------------------------------------------------------------
+    kafka-ui:
+        image: provectuslabs/kafka-ui:latest
+        container_name: oi_kafka_ui
+        depends_on:
+            - kafka
+        ports:
+            - "8080:8080"
+        environment:
+            KAFKA_CLUSTERS_0_NAME: local-cluster
+            KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+
+    # --------------------------------------------------------------------------
+    # 5. Core Matching Engine & Market Data Server: Exchange
+    # --------------------------------------------------------------------------
+    exchange:
+        build:
+            context: ./exchange
+            dockerfile: Dockerfile
+        container_name: oi_exchange
+        depends_on:
+            - kafka
+            - pgbouncer
+        ports:
+            - "4001:4001"
+        environment:
+            PORT_EXCHANGE: 4001
+            KAFKA_BROKER: kafka:9092
+            DB_HOST: pgbouncer
+            PGBOUNCER_PORT: 6432
+            POSTGRES_DB: ${POSTGRES_DB:-open_interest}
+            POSTGRES_USER: ${POSTGRES_USER:-postgres}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+            MDS_MODE: ${MDS_MODE:-USER_DRIVEN}
+
+    # --------------------------------------------------------------------------
+    # 6. Pre-Trade Risk & Routing Gateway: Platform (ROM / SOR / PIQ)
+    # --------------------------------------------------------------------------
+    platform:
+        build:
+            context: ./platform
+            dockerfile: Dockerfile
+        container_name: oi_platform
+        depends_on:
+            - kafka
+            - pgbouncer
+        ports:
+            - "4002:4002"
+        environment:
+            PORT_PLATFORM: 4002
+            PORT_ROM: 4003
+            PORT_SOR: 4004
+            PORT_PIQ: 4005
+            KAFKA_BROKER: kafka:9092
+            DB_HOST: pgbouncer
+            PGBOUNCER_PORT: 6432
+            POSTGRES_DB: ${POSTGRES_DB:-open_interest}
+            POSTGRES_USER: ${POSTGRES_USER:-postgres}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+
+    # --------------------------------------------------------------------------
+    # 7. Application Server & 60 FPS WebSocket Gateway: AppServer
+    # --------------------------------------------------------------------------
+    appserver:
+        build:
+            context: ./appserver
+            dockerfile: Dockerfile
+        container_name: oi_appserver
+        depends_on:
+            - kafka
+            - pgbouncer
+            - platform
+        ports:
+            - "4006:4006"
+        environment:
+            PORT_APPSERVER: 4006
+            KAFKA_BROKER: kafka:9092
+            DB_HOST: pgbouncer
+            PGBOUNCER_PORT: 6432
+            POSTGRES_DB: ${POSTGRES_DB:-open_interest}
+            POSTGRES_USER: ${POSTGRES_USER:-postgres}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+            JWT_SECRET: ${JWT_SECRET:-super_secret_open_interest_jwt_key_2026}
+            ADMIN_PASSWORD: ${ADMIN_PASSWORD:-AdminDefaultDev2026!}
+            TRADER1_PASSWORD: ${TRADER1_PASSWORD:-Trader1DefaultDev2026!}
+            TRADER2_PASSWORD: ${TRADER2_PASSWORD:-Trader2DefaultDev2026!}
+            PLATFORM_URL: http://platform:4002
+
+    # --------------------------------------------------------------------------
+    # 8. Web Trading Terminal Frontend
+    # --------------------------------------------------------------------------
+    frontend:
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile
+        container_name: oi_frontend
+        depends_on:
+            - appserver
+        ports:
+            - "80:80"

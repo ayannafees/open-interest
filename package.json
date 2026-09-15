@@ -1,0 +1,36 @@
+{
+    "name": "open-interest",
+    "version": "1.0.0",
+    "description": "Institutional-Grade Multi-Venue Futures Trading Platform & Order Execution Engine",
+    "scripts": {
+        "install:all": "npm --prefix exchange ci && npm --prefix platform ci && npm --prefix appserver ci && npm --prefix frontend ci",
+        "test:exchange": "npm --prefix exchange test",
+        "test:platform": "npm --prefix platform test",
+        "test:appserver": "npm --prefix appserver test",
+        "test:all": "npm run test:exchange && npm run test:platform && npm run test:appserver",
+        "build:frontend": "npm --prefix frontend run build",
+        "dev:exchange": "npm --prefix exchange run dev",
+        "dev:platform": "npm --prefix platform run dev",
+        "dev:appserver": "npm --prefix appserver run dev",
+        "dev:frontend": "npm --prefix frontend run dev",
+        "simulate:exchange": "npm --prefix exchange run simulate",
+        "simulate:platform": "npm --prefix platform run simulate",
+        "docker:up": "docker compose -f docker-compose.dev.yml up -d",
+        "docker:down": "docker compose -f docker-compose.dev.yml down",
+        "docker:prod:up": "docker compose up -d --build",
+        "docker:prod:down": "docker compose down"
+    },
+    "keywords": [
+        "trading",
+        "futures",
+        "order-book",
+        "matching-engine",
+        "kafka",
+        "timescaledb",
+        "pgbouncer",
+        "websockets",
+        "financial-markets"
+    ],
+    "author": "",
+    "license": "MIT"
+}
