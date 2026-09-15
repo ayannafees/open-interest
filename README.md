@@ -53,64 +53,9 @@
 
 ## 🏛️ System Architecture
 
-```mermaid
-flowchart TD
-    subgraph UI ["Desktop Web Trading Terminal (React 19 + TypeScript + Vite)"]
-        W1["DOM Depth Ladder (1-Click)"]
-        W2["Working Orders & PIQ Blotter"]
-        W3["Time & Sales Tape"]
-        W4["Position & Real-time P&L Book"]
-        W5["TradingView Candlestick Chart"]
-        W6["ROM Risk Controls & Kill Switch"]
-        W7["Fill Book & Execution Blotter"]
-    end
-
-    subgraph AppGateway ["Application Server & WebSocket Gateway (Port 4006)"]
-        AUTH["JWT / RBAC Engine (Admin vs Trader)"]
-        WSGW["60 FPS Reactive WebSocket Gateway (Multiplexed Rooms)"]
-        REST["REST Endpoints (Orders, Depth, Tape, OHLCV, Positions)"]
-    end
-
-    subgraph PlatformLayer ["Platform Gateway (ROM / SOR / PIQ) (Port 4002)"]
-        ROM["ROM: Sub-Millisecond Pre-Trade Risk Engine"]
-        SOR["SOR: Smart Order Router & Venue Slicer"]
-        PIQ["PIQ: Position-in-Queue Real-Time Estimator"]
-    end
-
-    subgraph KafkaBus ["Apache Kafka Event Bus (KRaft Mode - Port 29092)"]
-        T1["raw_orders_* (COMEX, NYMEX, CME, MX, ICE)"]
-        T2["order_events (ACK, REJECT, PARTIAL, FILL, CANCEL)"]
-        T3["trades (Execution Ticks)"]
-        T4["prices (L1/L2 Depth & Price Action)"]
-        T5["piq_updates (Queue Length & Position Ahead)"]
-    end
-
-    subgraph MatchingEngine ["Exchange & Market Data Server (Port 4001)"]
-        OB["In-Memory Continuous FIFO Double-Auction Engine"]
-        MDS["Market Data Server (Random Walk & Order Flow)"]
-        DBW["Async WAL Database Writer (Dynamic Micro-Batching)"]
-    end
-
-    subgraph StorageLayer ["Persistence & Analytics"]
-        PGB["pgBouncer Connection Pooler (Port 6432)"]
-        TDB[("TimescaleDB PostgreSQL 15 (Port 5432)")]
-    end
-
-    UI <-->|WebSocket Stream / JSON-RPC| WSGW
-    UI <-->|HTTP REST / JWT| REST
-    REST <--> AUTH
-    WSGW <-->|Kafka Consumer & Producer| KafkaBus
-    REST -->|Order Intent| PlatformLayer
-    ROM -->|Risk Passed| SOR
-    SOR -->|Routed Order| KafkaBus
-    KafkaBus --> OB
-    OB -->|Execution Reports & Trades| KafkaBus
-    MDS -->|Ticks & 20-Level Depth| KafkaBus
-    KafkaBus --> PIQ
-    PIQ -->|Queue Telemetry| KafkaBus
-    KafkaBus --> DBW
-    DBW --> PGB --> TDB
-```
+<p align="center">
+  <img src="docs/assets/architecture.png" alt="Open Interest Institutional System Architecture" width="100%" />
+</p>
 
 ---
 
