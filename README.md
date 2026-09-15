@@ -14,8 +14,8 @@
 | **App Server & Gateway** | `Node.js 18+`, `Express.js`, `ws (WebSocket)` | REST endpoints, JWT auth, and 60 FPS delta-throttled multiplexed WebSocket broadcast feeds. |
 | **Security & Auth** | `Bcrypt (10 Rounds)`, `JSON Web Tokens (HS256)` | Role-Based Access Control (Admin vs Trader) with dual username/ID identity resolution. |
 | **Matching Engine** | `In-Memory Double-Auction Engine (Node.js)` | Continuous FIFO Price-Time Priority matching with fixed-precision tick arithmetic. |
-| **Risk & Routing (ROM/SOR)**| `Pre-Trade Risk Engine`, `Smart Order Router` | Sub-millisecond pre-trade position/margin checks, working order reservation, and queue isolation. |
-| **Queue Telemetry (PIQ)** | `Position-in-Queue Estimator` | Real-time queue length tracking ahead of resting orders and exponential fill probability math. |
+| **Risk & Routing (ROM/SOR)**| `Pre-Trade Risk Engine`, `Smart Order Router (Node.js)` | Sub-millisecond pre-trade position/margin checks, working order reservation, and queue isolation. |
+| **Queue Telemetry (PIQ)** | `Position-in-Queue Estimator (Node.js)` | Real-time queue length tracking ahead of resting orders and exponential fill probability math. |
 | **Event Streaming Bus** | `Apache Kafka (v3.7+ KRaft Mode)`, `KafkaJS` | Distributed, partitioned event log for raw orders, execution reports, trades, and depth. |
 | **Time-Series Persistence** | `TimescaleDB (PostgreSQL 15)` | Partitioned hypertables with automated continuous aggregates (1s, 1m, 5m, 1h OHLCV). |
 | **Connection Pooling** | `pgBouncer 1.21+` | Transaction-mode connection pooling (port 6432) protecting DB from worker exhaustion. |
