@@ -106,7 +106,7 @@ services:
             POSTGRES_DB: ${POSTGRES_DB:-open_interest}
             POSTGRES_USER: ${POSTGRES_USER:-postgres}
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-            MDS_MODE: ${MDS_MODE:-USER_DRIVEN}
+            MDS_MODE: ${MDS_MODE:-RANDOM_WALK}
 
     # --------------------------------------------------------------------------
     # 6. Pre-Trade Risk & Routing Gateway: Platform (ROM / SOR / PIQ)
@@ -147,6 +147,7 @@ services:
             - kafka
             - pgbouncer
             - platform
+            - exchange
         ports:
             - "4006:4006"
         environment:
@@ -162,6 +163,7 @@ services:
             TRADER1_PASSWORD: ${TRADER1_PASSWORD:-Trader1DefaultDev2026!}
             TRADER2_PASSWORD: ${TRADER2_PASSWORD:-Trader2DefaultDev2026!}
             PLATFORM_URL: http://platform:4002
+            EXCHANGE_URL: http://exchange:4001
 
     # --------------------------------------------------------------------------
     # 8. Web Trading Terminal Frontend

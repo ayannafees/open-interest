@@ -315,6 +315,18 @@ class WebSocketGateway {
     return this.broadcastToRoom(`trader:${traderId}`, data);
   }
 
+  broadcastAll(data) {
+    const payload = typeof data === 'string' ? data : JSON.stringify(data);
+    let sentCount = 0;
+    for (const ws of this.wss.clients) {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(payload);
+        sentCount++;
+      }
+    }
+    return sentCount;
+  }
+
   broadcastToAdmins(data) {
     const payload = typeof data === 'string' ? data : JSON.stringify(data);
     let sentCount = 0;

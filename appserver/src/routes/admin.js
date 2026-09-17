@@ -354,11 +354,16 @@ router.post('/market-mode', async (req, res) => {
         const data = await exchangeRes.json();
         const gateway = req.app.get('gateway');
         if (gateway) {
-            gateway.broadcastToAdmins({
+            const eventPayload = {
                 type: 'MARKET_MODE_CHANGED',
                 mode: data.activeMode || mode,
                 timestamp: new Date().toISOString()
-            });
+            };
+            if (typeof gateway.broadcastAll === 'function') {
+                gateway.broadcastAll(eventPayload);
+            } else {
+                gateway.broadcastToAdmins(eventPayload);
+            }
         }
 
         res.json(data);

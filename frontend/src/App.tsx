@@ -282,9 +282,10 @@ export default function App() {
 
   const handleChangeMarketMode = async (newMode: 'RANDOM_WALK' | 'USER_DRIVEN') => {
     if (role !== 'ADMIN' || !token) return;
+    const prevMode = marketMode;
     setMarketMode(newMode);
     try {
-      await fetch('/api/admin/market-mode', {
+      const res = await fetch('/api/admin/market-mode', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -292,7 +293,14 @@ export default function App() {
         },
         body: JSON.stringify({ mode: newMode }),
       });
-    } catch { }
+      if (!res.ok) {
+        console.error('[Admin Error] Failed to change market mode:', res.status, await res.text().catch(() => ''));
+        setMarketMode(prevMode);
+      }
+    } catch (err) {
+      console.error('[Admin Error] Network failure changing market mode:', err);
+      setMarketMode(prevMode);
+    }
   };
 
   // 7. Window Management Actions
