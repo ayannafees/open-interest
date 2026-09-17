@@ -8,6 +8,7 @@
         "test:platform": "npm --prefix platform test",
         "test:appserver": "npm --prefix appserver test",
         "test:all": "npm run test:exchange && npm run test:platform && npm run test:appserver",
+        "benchmark": "node scripts/benchmark-system.js",
         "build:frontend": "npm --prefix frontend run build",
         "dev:exchange": "npm --prefix exchange run dev",
         "dev:platform": "npm --prefix platform run dev",
