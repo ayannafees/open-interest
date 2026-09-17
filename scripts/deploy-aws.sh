@@ -48,21 +48,19 @@ fi
 
 # 2. Check & Install Docker / Docker Compose
 echo -e "\n${YELLOW}[2/5] Checking Docker & Docker Compose installation...${NC}"
-if ! command -v docker &> /dev/null; then
-    echo -e "${YELLOW}--> Installing Docker CE and Docker Compose plugin...${NC}"
+if ! command -v docker &> /dev/null || ! docker compose version &> /dev/null; then
+    echo -e "${YELLOW}--> Installing Docker CE & Compose via official installer...${NC}"
     sudo apt-get update -y
     sudo apt-get install -y ca-certificates curl gnupg lsb-release
-
-    sudo install -m 0755 -d /etc/apt/keyrings
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg --yes
-    sudo chmod a+r /etc/apt/keyrings/docker.gpg
-
-    echo \
-      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-      $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-    sudo apt-get update -y
-    sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    
+    if curl -fsSL https://get.docker.com -o get-docker.sh; then
+        sudo sh get-docker.sh
+        rm -f get-docker.sh
+    else
+        echo -e "${YELLOW}--> Fallback: Installing docker.io & docker-compose-v2 via Ubuntu apt...${NC}"
+        sudo apt-get install -y docker.io docker-compose-v2
+    fi
+    
     sudo systemctl enable --now docker
     sudo usermod -aG docker "$USER" 2>/dev/null || true
     echo -e "${GREEN}✓ Docker engine installed successfully.${NC}"
