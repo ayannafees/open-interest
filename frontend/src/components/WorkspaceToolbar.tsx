@@ -137,7 +137,7 @@ export const WorkspaceToolbar: React.FC<WorkspaceToolbarProps> = ({
                 <button
                     onClick={() => onSpawnWidget('ORDER_BOOK')}
                     className="flex items-center gap-1 px-2 py-0.5 bg-white hover:bg-slate-100 text-slate-800 text-xs font-bold rounded border border-[#b4bcc8] transition active:scale-95 shadow-sm"
-                    title="Open Working Orders Book Blotter"
+                    title="Open Order Book"
                 >
                     <ClipboardList size={13} className="text-amber-700" />
                     <span>Order Book</span>
@@ -145,10 +145,10 @@ export const WorkspaceToolbar: React.FC<WorkspaceToolbarProps> = ({
                 <button
                     onClick={() => onSpawnWidget('TAS')}
                     className="flex items-center gap-1 px-2 py-0.5 bg-white hover:bg-slate-100 text-slate-800 text-xs font-bold rounded border border-[#b4bcc8] transition active:scale-95 shadow-sm"
-                    title="Open Time & Sales Tape"
+                    title="Open Time & Sales"
                 >
                     <ListOrdered size={13} className="text-cyan-700" />
-                    <span>Tape (TAS)</span>
+                    <span>Time & Sales</span>
                 </button>
                 <button
                     onClick={() => onSpawnWidget('POSITION_BOOK')}

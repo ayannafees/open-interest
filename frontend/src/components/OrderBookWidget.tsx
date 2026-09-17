@@ -196,7 +196,7 @@ export const OrderBookWidget: React.FC<OrderBookWidgetProps> = ({
                     <div className="flex items-center gap-1.5">
                         <ClipboardList size={14} className="text-blue-700" />
                         <span className="text-[11px] font-black text-slate-900 uppercase">
-                            Working Orders
+                            Order Book
                         </span>
                     </div>
 

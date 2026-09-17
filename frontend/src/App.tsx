@@ -117,7 +117,16 @@ export default function App() {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
-        return JSON.parse(saved);
+        const parsed: WindowInstance[] = JSON.parse(saved);
+        return parsed.map((w) => {
+          if (w.type === 'ORDER_BOOK' && (w.title === 'Working Orders Blotter' || !w.title)) {
+            return { ...w, title: 'Order Book' };
+          }
+          if (w.type === 'TAS' && (w.title === 'Time & Sales Tape' || !w.title)) {
+            return { ...w, title: 'Time & Sales' };
+          }
+          return w;
+        });
       }
     } catch { }
     return [];
@@ -358,12 +367,12 @@ export default function App() {
         height = 440;
         break;
       case 'ORDER_BOOK':
-        title = 'Working Orders Blotter';
+        title = 'Order Book';
         width = 680;
         height = 380;
         break;
       case 'TAS':
-        title = 'Time & Sales Tape';
+        title = 'Time & Sales';
         width = 340;
         height = 360;
         break;
@@ -542,7 +551,7 @@ export default function App() {
       {
         id: 'scalper_book',
         type: 'ORDER_BOOK',
-        title: 'Working Orders Blotter',
+        title: 'Order Book',
         instrument: 'GC Dec27',
         x: 920,
         y: 20,
@@ -555,7 +564,7 @@ export default function App() {
       {
         id: 'scalper_tas',
         type: 'TAS',
-        title: 'Time & Sales Tape',
+        title: 'Time & Sales',
         instrument: 'GC Dec27',
         x: 20,
         y: 410,
@@ -612,7 +621,7 @@ export default function App() {
       {
         id: 'multi_book',
         type: 'ORDER_BOOK',
-        title: 'Working Orders Blotter',
+        title: 'Order Book',
         instrument: 'ALL',
         x: 20,
         y: 360,
@@ -788,7 +797,7 @@ export default function App() {
                   Blank Trading Canvas
                 </h2>
                 <p className="text-xs text-terminal-muted mb-6 leading-relaxed">
-                  Click any widget button in the top toolbar to spawn charts, DOM ladders, order tickets, working orders blotter, or real-time fill alerts.
+                  Click any widget button in the top toolbar to spawn charts, DOM ladders, order tickets, order book, or real-time fill alerts.
                 </p>
 
                 <div className="flex items-center justify-center gap-3">
