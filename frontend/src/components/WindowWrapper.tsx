@@ -36,6 +36,7 @@ export const WindowWrapper: React.FC<WindowWrapperProps> = ({
     }
 
     const supportsProductSelector =
+        win.type !== 'ORDER_BOOK' &&
         win.type !== 'POSITION_BOOK' &&
         win.type !== 'FILL_BOOK' &&
         win.type !== 'FILL_ALERT' &&
