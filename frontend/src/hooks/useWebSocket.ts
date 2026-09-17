@@ -1314,7 +1314,10 @@ export function useWebSocket({
             if (wsRef.current?.readyState === WebSocket.OPEN) return;
 
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsUrl = `${protocol}//${window.location.hostname}:4006/ws?token=${token}`;
+            const wsHost = (window.location.port === '5173' || window.location.port === '3000')
+                ? `${window.location.hostname}:4006`
+                : window.location.host;
+            const wsUrl = `${protocol}//${wsHost}/ws?token=${token}`;
 
             console.log(`[WS] Connecting to ${wsUrl}...`);
             const ws = new WebSocket(wsUrl);

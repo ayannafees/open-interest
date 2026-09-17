@@ -24,6 +24,8 @@ services:
             KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
             KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
             KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+            KAFKA_HEAP_OPTS: "-Xmx384M -Xms384M"
+        restart: unless-stopped
 
     # --------------------------------------------------------------------------
     # 2. Database: TimescaleDB (PostgreSQL 15 Time-Series Engine)
@@ -31,6 +33,7 @@ services:
     timescaledb:
         image: timescale/timescaledb:latest-pg15
         container_name: oi_timescaledb
+        restart: unless-stopped
         environment:
             POSTGRES_USER: ${POSTGRES_USER:-postgres}
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
@@ -46,6 +49,7 @@ services:
     pgbouncer:
         image: edoburu/pgbouncer:latest
         container_name: oi_pgbouncer
+        restart: unless-stopped
         depends_on:
             - timescaledb
         environment:
@@ -67,6 +71,7 @@ services:
     kafka-ui:
         image: provectuslabs/kafka-ui:latest
         container_name: oi_kafka_ui
+        restart: unless-stopped
         depends_on:
             - kafka
         ports:
@@ -83,6 +88,7 @@ services:
             context: ./exchange
             dockerfile: Dockerfile
         container_name: oi_exchange
+        restart: unless-stopped
         depends_on:
             - kafka
             - pgbouncer
@@ -106,6 +112,7 @@ services:
             context: ./platform
             dockerfile: Dockerfile
         container_name: oi_platform
+        restart: unless-stopped
         depends_on:
             - kafka
             - pgbouncer
@@ -131,6 +138,7 @@ services:
             context: ./appserver
             dockerfile: Dockerfile
         container_name: oi_appserver
+        restart: unless-stopped
         depends_on:
             - kafka
             - pgbouncer
@@ -159,6 +167,7 @@ services:
             context: ./frontend
             dockerfile: Dockerfile
         container_name: oi_frontend
+        restart: unless-stopped
         depends_on:
             - appserver
         ports:
