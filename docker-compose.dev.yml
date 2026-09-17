@@ -43,7 +43,7 @@ services:
         environment:
             DB_USER: ${POSTGRES_USER:-postgres}
             DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-            DB_HOST: ${DB_HOST:-timescaledb}
+            DB_HOST: timescaledb
             DB_NAME: ${POSTGRES_DB:-open_interest}
             POOL_MODE: transaction
             MAX_CLIENT_CONN: 200

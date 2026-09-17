@@ -70,18 +70,8 @@ fi
 
 # 3. Environment Configuration Check
 echo -e "\n${YELLOW}[3/5] Verifying environment configuration (.env)...${NC}"
-if [ ! -f .env ]; then
-    if [ -f .env.example ]; then
-        echo "Creating .env from .env.example..."
-        cp .env.example .env
-        echo -e "${GREEN}✓ Initialized .env from template.${NC}"
-    else
-        echo -e "${RED}Error: Neither .env nor .env.example found.${NC}"
-        exit 1
-    fi
-else
-    echo -e "${GREEN}✓ .env file present.${NC}"
-fi
+cp .env.example .env
+echo -e "${GREEN}✓ Synchronized .env from template.${NC}"
 
 # Ensure current user has immediate access to docker socket
 sudo chmod 666 /var/run/docker.sock 2>/dev/null || true
