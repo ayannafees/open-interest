@@ -83,16 +83,19 @@ else
     echo -e "${GREEN}✓ .env file present.${NC}"
 fi
 
+# Ensure current user has immediate access to docker socket
+sudo chmod 666 /var/run/docker.sock 2>/dev/null || true
+
 # 4. Build and Launch Containers
 echo -e "\n${YELLOW}[4/5] Building and launching 8 Docker containers...${NC}"
-docker compose down --remove-orphans 2>/dev/null || true
-docker compose build
-docker compose up -d
+sudo docker compose down --remove-orphans 2>/dev/null || true
+sudo docker compose build
+sudo docker compose up -d
 
 # 5. Health Status & Completion
 echo -e "\n${YELLOW}[5/5] Waiting for services to initialize...${NC}"
 sleep 10
-docker compose ps
+sudo docker compose ps
 
 # Detect Public IP
 PUBLIC_IP=$(curl -s https://checkip.amazonaws.com || curl -s https://ifconfig.me || echo "YOUR-EC2-PUBLIC-IP")
