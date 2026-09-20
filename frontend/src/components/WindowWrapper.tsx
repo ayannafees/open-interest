@@ -175,8 +175,8 @@ export const WindowWrapper: React.FC<WindowWrapperProps> = ({
                 onDragEnd?.();
             }}
             dragHandleClassName="window-drag-handle"
-            minWidth={320}
-            minHeight={220}
+            minWidth={200}
+            minHeight={180}
             style={{ zIndex: win.zIndex }}
             className="flex flex-col bg-[#edf0f5] border border-[#9ca3af] hover:border-[#6b7280] rounded shadow-lg overflow-hidden focus-within:border-terminal-accent transition-colors duration-150"
             onPointerDownCapture={() => onFocus(win.id)}

@@ -521,29 +521,62 @@ export default function App() {
 
   // 8. Quick Presets
   const handleApplyScalperLayout = () => {
+    // Canvas dimensions calibrated for 1440p institutional desk cockpits
+    const vw = typeof window !== 'undefined' ? window.innerWidth : 2560;
+    const vh = typeof window !== 'undefined' ? (window.innerHeight - 44) : 1300;
+
+    // Col 1 (DOM Ladder & Order Ticket): ~21% of usable width
+    const colLadderW = Math.max(360, Math.round((vw - 50) * 0.21));
+
+    // Row 1 remainder: Chart and Order Book
+    const remRow1 = (vw - 40) - colLadderW;
+    const chartW = Math.round(remRow1 * 0.475);
+    const bookW = remRow1 - chartW - 10;
+
+    // Row 2 remainder: Time & Sales, Fills Log, Position Book
+    const remRow2 = (vw - 50) - colLadderW;
+    const tasW = Math.round(remRow2 * 0.267);
+    const fillsW = Math.round(remRow2 * 0.294);
+    const posW = remRow2 - tasW - fillsW;
+
+    const rowH = Math.max(385, Math.floor((vh - 30) / 2));
+
+    const xLadder = 10;
+    const xChart = xLadder + colLadderW + 10;
+    const xBook = xChart + chartW + 10;
+
+    const xTicket = 10;
+    const xTas = xTicket + colLadderW + 10;
+    const xFills = xTas + tasW + 10;
+    const xPos = xFills + fillsW + 10;
+
+    const y1 = 10;
+    const y2 = y1 + rowH + 10;
+
     setWindows([
-      {
-        id: 'scalper_chart',
-        type: 'CHART',
-        title: 'Trade Chart',
-        instrument: 'GC Dec27',
-        x: 20,
-        y: 20,
-        width: 520,
-        height: 380,
-        zIndex: 11,
-        isMinimized: false,
-        isMaximized: false,
-      },
+      // Row 1 - DOM Ladder, Trade Chart, Order Book
       {
         id: 'scalper_ladder',
         type: 'LADDER',
         title: 'DOM Depth Ladder',
         instrument: 'GC Dec27',
-        x: 550,
-        y: 20,
-        width: 360,
-        height: 480,
+        x: xLadder,
+        y: y1,
+        width: colLadderW,
+        height: rowH,
+        zIndex: 11,
+        isMinimized: false,
+        isMaximized: false,
+      },
+      {
+        id: 'scalper_chart',
+        type: 'CHART',
+        title: 'Trade Chart',
+        instrument: 'GC Dec27',
+        x: xChart,
+        y: y1,
+        width: chartW,
+        height: rowH,
         zIndex: 12,
         isMinimized: false,
         isMaximized: false,
@@ -553,11 +586,26 @@ export default function App() {
         type: 'ORDER_BOOK',
         title: 'Order Book',
         instrument: 'GC Dec27',
-        x: 920,
-        y: 20,
-        width: 620,
-        height: 480,
+        x: xBook,
+        y: y1,
+        width: bookW,
+        height: rowH,
         zIndex: 13,
+        isMinimized: false,
+        isMaximized: false,
+      },
+
+      // Row 2 - Order Entry Ticket, Time & Sales, Execution Fills Log, Position Book & P&L
+      {
+        id: 'scalper_ticket',
+        type: 'ORDER_TICKET',
+        title: 'Order Entry Ticket',
+        instrument: 'GC Dec27',
+        x: xTicket,
+        y: y2,
+        width: colLadderW,
+        height: rowH,
+        zIndex: 14,
         isMinimized: false,
         isMaximized: false,
       },
@@ -566,11 +614,37 @@ export default function App() {
         type: 'TAS',
         title: 'Time & Sales',
         instrument: 'GC Dec27',
-        x: 20,
-        y: 410,
-        width: 520,
-        height: 250,
-        zIndex: 14,
+        x: xTas,
+        y: y2,
+        width: tasW,
+        height: rowH,
+        zIndex: 15,
+        isMinimized: false,
+        isMaximized: false,
+      },
+      {
+        id: 'scalper_fill_book',
+        type: 'FILL_BOOK',
+        title: 'Execution Fills Log',
+        instrument: 'GC Dec27',
+        x: xFills,
+        y: y2,
+        width: fillsW,
+        height: rowH,
+        zIndex: 16,
+        isMinimized: false,
+        isMaximized: false,
+      },
+      {
+        id: 'scalper_position_book',
+        type: 'POSITION_BOOK',
+        title: 'Position Book & P&L',
+        instrument: 'GC Dec27',
+        x: xPos,
+        y: y2,
+        width: posW,
+        height: rowH,
+        zIndex: 17,
         isMinimized: false,
         isMaximized: false,
       },
@@ -578,56 +652,147 @@ export default function App() {
   };
 
   const handleApplyMultiContractLayout = () => {
+    // Dynamic canvas dimensions calibrated for 1440p (2560x1440) institutional desks
+    const vw = typeof window !== 'undefined' ? window.innerWidth : 2560;
+    const vh = typeof window !== 'undefined' ? (window.innerHeight - 44) : 1300;
+
+    const col1W = Math.max(360, Math.round((vw - 50) * 0.201));
+    const col2W = Math.max(280, Math.round((vw - 50) * 0.153));
+    const col3W = Math.max(380, Math.round((vw - 50) * 0.203));
+    const col4W = Math.max(700, (vw - 50) - col1W - col2W - col3W);
+
+    const posW = Math.round(col4W * 0.655);
+    const fillsW = col4W - posW - 10;
+
+    const rowH = Math.max(385, Math.floor((vh - 30) / 2));
+
+    const x1 = 10;
+    const x2 = x1 + col1W + 10;
+    const x3 = x2 + col2W + 10;
+    const x4 = x3 + col3W + 10;
+    const x5_fills = x4 + posW + 10;
+
+    const y1 = 10;
+    const y2 = y1 + rowH + 10;
+
     setWindows([
+      // Row 1 - GC Dec27 (Gold)
+      {
+        id: 'multi_ladder_gc',
+        type: 'LADDER',
+        title: 'DOM Depth Ladder',
+        instrument: 'GC Dec27',
+        x: x1,
+        y: y1,
+        width: col1W,
+        height: rowH,
+        zIndex: 11,
+        isMinimized: false,
+        isMaximized: false,
+      },
+      {
+        id: 'multi_tas_gc',
+        type: 'TAS',
+        title: 'Time & Sales',
+        instrument: 'GC Dec27',
+        x: x2,
+        y: y1,
+        width: col2W,
+        height: rowH,
+        zIndex: 12,
+        isMinimized: false,
+        isMaximized: false,
+      },
       {
         id: 'multi_chart_gc',
         type: 'CHART',
-        title: 'Gold Chart',
+        title: 'Trade Chart',
         instrument: 'GC Dec27',
-        x: 20,
-        y: 20,
-        width: 480,
-        height: 330,
-        zIndex: 11,
+        x: x3,
+        y: y1,
+        width: col3W,
+        height: rowH,
+        zIndex: 13,
+        isMinimized: false,
+        isMaximized: false,
+      },
+      {
+        id: 'multi_order_book',
+        type: 'ORDER_BOOK',
+        title: 'Order Book',
+        instrument: 'GC Dec27',
+        x: x4,
+        y: y1,
+        width: col4W,
+        height: rowH,
+        zIndex: 14,
+        isMinimized: false,
+        isMaximized: false,
+      },
+
+      // Row 2 - CL Dec27 (Crude Oil) + Execution & Position Blotters
+      {
+        id: 'multi_ladder_cl',
+        type: 'LADDER',
+        title: 'DOM Depth Ladder',
+        instrument: 'CL Dec27',
+        x: x1,
+        y: y2,
+        width: col1W,
+        height: rowH,
+        zIndex: 15,
+        isMinimized: false,
+        isMaximized: false,
+      },
+      {
+        id: 'multi_tas_cl',
+        type: 'TAS',
+        title: 'Time & Sales',
+        instrument: 'CL Dec27',
+        x: x2,
+        y: y2,
+        width: col2W,
+        height: rowH,
+        zIndex: 16,
         isMinimized: false,
         isMaximized: false,
       },
       {
         id: 'multi_chart_cl',
         type: 'CHART',
-        title: 'Crude Oil Chart',
+        title: 'Trade Chart',
         instrument: 'CL Dec27',
-        x: 510,
-        y: 20,
-        width: 480,
-        height: 330,
-        zIndex: 12,
+        x: x3,
+        y: y2,
+        width: col3W,
+        height: rowH,
+        zIndex: 17,
         isMinimized: false,
         isMaximized: false,
       },
       {
-        id: 'multi_ladder_gc',
-        type: 'LADDER',
-        title: 'Gold DOM',
+        id: 'multi_position_book',
+        type: 'POSITION_BOOK',
+        title: 'Position Book & P&L',
         instrument: 'GC Dec27',
-        x: 1000,
-        y: 20,
-        width: 320,
-        height: 440,
-        zIndex: 13,
+        x: x4,
+        y: y2,
+        width: posW,
+        height: rowH,
+        zIndex: 18,
         isMinimized: false,
         isMaximized: false,
       },
       {
-        id: 'multi_book',
-        type: 'ORDER_BOOK',
-        title: 'Order Book',
-        instrument: 'ALL',
-        x: 20,
-        y: 360,
-        width: 970,
-        height: 280,
-        zIndex: 14,
+        id: 'multi_fill_book',
+        type: 'FILL_BOOK',
+        title: 'Execution Fills Log',
+        instrument: 'GC Dec27',
+        x: x5_fills,
+        y: y2,
+        width: fillsW,
+        height: rowH,
+        zIndex: 19,
         isMinimized: false,
         isMaximized: false,
       },
