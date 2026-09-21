@@ -50,3 +50,10 @@ SELECT add_continuous_aggregate_policy('ohlcv_1min',
     end_offset        => INTERVAL '30 seconds',
     schedule_interval => INTERVAL '30 seconds',
     if_not_exists     => true);
+
+-- 5. Automatic Data Retention Policies
+-- Automatically drop raw price ticks older than 6 hours
+SELECT add_retention_policy('prices', INTERVAL '6 hours', if_not_exists => true);
+
+-- Automatically drop raw trade tape rows older than 24 hours (1-min OHLCV continuous aggregates remain preserved)
+SELECT add_retention_policy('trades', INTERVAL '24 hours', if_not_exists => true);

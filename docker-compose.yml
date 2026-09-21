@@ -1,3 +1,9 @@
+x-logging: &default-logging
+    driver: "json-file"
+    options:
+        max-size: "20m"
+        max-file: "3"
+
 services:
     # --------------------------------------------------------------------------
     # 1. Event Streaming & Messaging: Apache Kafka (KRaft Mode)
@@ -23,7 +29,11 @@ services:
             KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
             KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
             KAFKA_HEAP_OPTS: "-Xmx384M -Xms384M"
+            KAFKA_LOG_RETENTION_HOURS: "2"
+            KAFKA_LOG_RETENTION_BYTES: "536870912"
+            KAFKA_LOG_SEGMENT_BYTES: "104857600"
         restart: unless-stopped
+        logging: *default-logging
 
     # --------------------------------------------------------------------------
     # 2. Database: TimescaleDB (PostgreSQL 15 Time-Series Engine)
@@ -42,9 +52,11 @@ services:
             - ./init-db:/docker-entrypoint-initdb.d
         healthcheck:
             test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-open_interest}"]
-            interval: 3s
-            timeout: 3s
+            interval: 10s
+            timeout: 5s
             retries: 5
+            start_period: 30s
+        logging: *default-logging
 
     # --------------------------------------------------------------------------
     # 3. Connection Pooler: pgBouncer (Transaction Pooling)
@@ -68,6 +80,7 @@ services:
             LISTEN_PORT: 6432
         ports:
             - "6432:6432"
+        logging: *default-logging
 
     # --------------------------------------------------------------------------
     # 4. Kafka Web UI
@@ -83,6 +96,7 @@ services:
         environment:
             KAFKA_CLUSTERS_0_NAME: local-cluster
             KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+        logging: *default-logging
 
     # --------------------------------------------------------------------------
     # 5. Core Matching Engine & Market Data Server: Exchange
@@ -107,6 +121,7 @@ services:
             POSTGRES_USER: ${POSTGRES_USER:-postgres}
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
             MDS_MODE: ${MDS_MODE:-RANDOM_WALK}
+        logging: *default-logging
 
     # --------------------------------------------------------------------------
     # 6. Pre-Trade Risk & Routing Gateway: Platform (ROM / SOR / PIQ)
@@ -133,6 +148,7 @@ services:
             POSTGRES_DB: ${POSTGRES_DB:-open_interest}
             POSTGRES_USER: ${POSTGRES_USER:-postgres}
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+        logging: *default-logging
 
     # --------------------------------------------------------------------------
     # 7. Application Server & 60 FPS WebSocket Gateway: AppServer
@@ -164,6 +180,7 @@ services:
             TRADER2_PASSWORD: ${TRADER2_PASSWORD:-Trader2DefaultDev2026!}
             PLATFORM_URL: http://platform:4002
             EXCHANGE_URL: http://exchange:4001
+        logging: *default-logging
 
     # --------------------------------------------------------------------------
     # 8. Web Trading Terminal Frontend
@@ -178,3 +195,4 @@ services:
             - appserver
         ports:
             - "80:80"
+        logging: *default-logging
