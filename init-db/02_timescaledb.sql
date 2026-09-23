@@ -11,7 +11,7 @@ SELECT create_hypertable('trades', by_range('time'), if_not_exists => true);
 SELECT set_chunk_time_interval('trades', INTERVAL '1 hour');
 
 SELECT create_hypertable('prices', by_range('time'), if_not_exists => true);
-SELECT set_chunk_time_interval('prices', INTERVAL '1 day');
+SELECT set_chunk_time_interval('prices', INTERVAL '15 minutes');
 
 -- 2. Configure Compression Policies
 -- Trades older than 1 hour: compressed by instrument segment
@@ -22,12 +22,12 @@ ALTER TABLE trades SET (
 );
 SELECT add_compression_policy('trades', INTERVAL '1 hour', if_not_exists => true);
 
--- Prices older than 10 minutes: compressed
+-- Prices older than 15 minutes: compressed
 ALTER TABLE prices SET (
     timescaledb.compress,
     timescaledb.compress_segmentby = 'instrument'
 );
-SELECT add_compression_policy('prices', INTERVAL '10 minutes', if_not_exists => true);
+SELECT add_compression_policy('prices', INTERVAL '15 minutes', if_not_exists => true);
 
 -- 3. Continuous Aggregate View for 1-Minute Candlestick Charts
 CREATE MATERIALIZED VIEW IF NOT EXISTS ohlcv_1min
@@ -52,8 +52,8 @@ SELECT add_continuous_aggregate_policy('ohlcv_1min',
     if_not_exists     => true);
 
 -- 5. Automatic Data Retention Policies
--- Automatically drop raw price ticks older than 6 hours
+-- Automatically drop ephemeral price ticks older than 6 hours (leaves 24 active 15-min chunks max)
 SELECT add_retention_policy('prices', INTERVAL '6 hours', if_not_exists => true);
 
--- Automatically drop raw trade tape rows older than 24 hours (1-min OHLCV continuous aggregates remain preserved)
-SELECT add_retention_policy('trades', INTERVAL '24 hours', if_not_exists => true);
+-- Note: Trades are legal contracts, fill blotter logs, and source data for aggregates.
+-- No retention policy is placed on trades; they are retained permanently with 95% columnar compression.
