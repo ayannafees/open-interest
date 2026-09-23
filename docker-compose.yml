@@ -32,6 +32,8 @@ services:
             KAFKA_LOG_RETENTION_HOURS: "2"
             KAFKA_LOG_RETENTION_BYTES: "536870912"
             KAFKA_LOG_SEGMENT_BYTES: "104857600"
+        volumes:
+            - kafka_data:/var/lib/kafka/data
         restart: unless-stopped
         logging: *default-logging
 
@@ -50,6 +52,7 @@ services:
             - "5432:5432"
         volumes:
             - ./init-db:/docker-entrypoint-initdb.d
+            - timescaledb_data:/var/lib/postgresql/data
         healthcheck:
             test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-open_interest}"]
             interval: 10s
@@ -196,3 +199,13 @@ services:
         ports:
             - "80:80"
         logging: *default-logging
+
+# ==============================================================================
+# Persistent Named Volumes (Prevents Anonymous Volume Bloat)
+# ==============================================================================
+volumes:
+    timescaledb_data:
+        name: oi_timescaledb_data
+    kafka_data:
+        name: oi_kafka_data
+
