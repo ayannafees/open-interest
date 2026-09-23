@@ -52,8 +52,11 @@ SELECT add_continuous_aggregate_policy('ohlcv_1min',
     if_not_exists     => true);
 
 -- 5. Automatic Data Retention Policies
--- Automatically drop ephemeral price ticks older than 6 hours (leaves 24 active 15-min chunks max)
-SELECT add_retention_policy('prices', INTERVAL '6 hours', if_not_exists => true);
+-- Automatically drop ephemeral price ticks older than 6 hours (worker checks every 30m, leaves 24 active 15-min chunks max)
+SELECT add_retention_policy('prices',
+    drop_after        => INTERVAL '6 hours',
+    schedule_interval => INTERVAL '30 minutes',
+    if_not_exists     => true);
 
 -- Note: Trades are legal contracts, fill blotter logs, and source data for aggregates.
 -- No retention policy is placed on trades; they are retained permanently with 95% columnar compression.
