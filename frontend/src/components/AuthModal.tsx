@@ -12,7 +12,9 @@ import {
     UserCheck,
     Activity,
     Cpu,
-    LockKeyhole
+    LockKeyhole,
+    Eye,
+    EyeOff
 } from 'lucide-react';
 
 interface AuthModalProps {
@@ -36,11 +38,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     // Login Form State
     const [loginUsername, setLoginUsername] = useState('');
     const [loginPassword, setLoginPassword] = useState('');
+    const [showLoginPassword, setShowLoginPassword] = useState(false);
 
     // Register Form State
     const [regUsername, setRegUsername] = useState('');
     const [regPassword, setRegPassword] = useState('');
     const [regConfirmPassword, setRegConfirmPassword] = useState('');
+    const [showRegPassword, setShowRegPassword] = useState(false);
+    const [showRegConfirmPassword, setShowRegConfirmPassword] = useState(false);
 
     // Status / Feedback
     const [isLoading, setIsLoading] = useState(false);
@@ -326,13 +331,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                                 <div className="relative">
                                     <Lock size={14} className="absolute left-3 top-2.5 text-slate-400" />
                                     <input
-                                        type="password"
+                                        type={showLoginPassword ? "text" : "password"}
                                         value={loginPassword}
                                         onChange={(e) => setLoginPassword(e.target.value)}
                                         placeholder="••••••••"
-                                        className="w-full bg-slate-50 border border-[#b4bcc8] rounded pl-9 pr-3 py-2 text-xs font-bold text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 shadow-inner"
+                                        className="w-full bg-slate-50 border border-[#b4bcc8] rounded pl-9 pr-9 py-2 text-xs font-bold text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 shadow-inner"
                                         required
                                     />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowLoginPassword(prev => !prev)}
+                                        className="absolute right-2.5 top-2 text-slate-400 hover:text-slate-700 transition p-0.5 rounded focus:outline-none"
+                                        title={showLoginPassword ? "Hide password" : "Show password"}
+                                    >
+                                        {showLoginPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                                    </button>
                                 </div>
                             </div>
 
@@ -383,13 +396,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                                 <div className="relative">
                                     <Lock size={14} className="absolute left-3 top-2.5 text-slate-400" />
                                     <input
-                                        type="password"
+                                        type={showRegPassword ? "text" : "password"}
                                         value={regPassword}
                                         onChange={(e) => setRegPassword(e.target.value)}
                                         placeholder="••••••••"
-                                        className="w-full bg-slate-50 border border-[#b4bcc8] rounded pl-9 pr-3 py-2 text-xs font-bold text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 shadow-inner"
+                                        className="w-full bg-slate-50 border border-[#b4bcc8] rounded pl-9 pr-9 py-2 text-xs font-bold text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 shadow-inner"
                                         required
                                     />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowRegPassword(prev => !prev)}
+                                        className="absolute right-2.5 top-2 text-slate-400 hover:text-slate-700 transition p-0.5 rounded focus:outline-none"
+                                        title={showRegPassword ? "Hide password" : "Show password"}
+                                    >
+                                        {showRegPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                                    </button>
                                 </div>
                             </div>
 
@@ -400,13 +421,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                                 <div className="relative">
                                     <Lock size={14} className="absolute left-3 top-2.5 text-slate-400" />
                                     <input
-                                        type="password"
+                                        type={showRegConfirmPassword ? "text" : "password"}
                                         value={regConfirmPassword}
                                         onChange={(e) => setRegConfirmPassword(e.target.value)}
                                         placeholder="••••••••"
-                                        className="w-full bg-slate-50 border border-[#b4bcc8] rounded pl-9 pr-3 py-2 text-xs font-bold text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 shadow-inner"
+                                        className="w-full bg-slate-50 border border-[#b4bcc8] rounded pl-9 pr-9 py-2 text-xs font-bold text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 shadow-inner"
                                         required
                                     />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowRegConfirmPassword(prev => !prev)}
+                                        className="absolute right-2.5 top-2 text-slate-400 hover:text-slate-700 transition p-0.5 rounded focus:outline-none"
+                                        title={showRegConfirmPassword ? "Hide password" : "Show password"}
+                                    >
+                                        {showRegConfirmPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                                    </button>
                                 </div>
                             </div>
 
